@@ -2,7 +2,7 @@
 // @name         ✨Hook.DNY-SCRM-通过Authorization登录✨
 // @namespace    fansir
 // @author       fansir
-// @version      0.6
+// @version      0.6.1
 // @description  使用🚀Authorization🚀登录DNY-SCRM
 // @author       Fansirliu
 // @match        https://dyaccountmgt.platform-loreal.cn/*
@@ -12,6 +12,7 @@
 // @grant        none
 // @license      MIT
 // ==/UserScript==
+//去除不必要的注释-version      0.6.1
 //优化刷新页面的逻辑,检测到用户点击等操作时,重置续命计时器,优化hook提示-version      0.6
 //修复因账号id固定导致的访问蓝v号提示账号不存在的问题-version      0.5
 //更名,调整按钮样式-version      0.4
