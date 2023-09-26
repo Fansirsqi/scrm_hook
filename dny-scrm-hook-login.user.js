@@ -35,13 +35,6 @@
 		// 创建按钮元素
 		const button = document.createElement("button");
 		button.innerText = "🚀Authorization Login";
-
-		// 设置按钮样式
-		//*button.style.position = "fixed";
-		//button.style.bottom = "20px";
-		//button.style.right = "20px";
-		//button.style.zIndex = "9999";
-		//button.style.borderRadius = "12px";
 		button.title = "使用Authorization登录";
 		button.style.cssText = "position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 12px;border:none; font-size: 20px; font-weight: 900; color: dodgerblue; cursor: pointer;line-height: 20px;padding: 10px;";
 
