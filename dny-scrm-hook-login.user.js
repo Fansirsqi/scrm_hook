@@ -2,7 +2,7 @@
 // @name         ✨Hook.DNY-SCRM-通过Authorization登录✨
 // @namespace    fansir
 // @author       fansir
-// @version      0.7
+// @version      0.7.1
 // @description  使用🚀Authorization🚀登录DNY-SCRM
 // @author       Fansirliu
 // @match        https://dyaccountmgt.platform-loreal.cn/*
@@ -12,6 +12,7 @@
 // @grant        none
 // @license      MIT
 // ==/UserScript==
+//调整逻辑,在非登录页面,才进行监听等操作@version      0.7.1
 //去除不必要的注释-version      0.6.1
 //优化刷新页面的逻辑,检测到用户点击等操作时,重置续命计时器,优化hook提示-version      0.6
 //修复因账号id固定导致的访问蓝v号提示账号不存在的问题-version      0.5
@@ -75,6 +76,9 @@
 
 		// 将按钮添加到页面中
 		document.body.appendChild(button);
+	} else {
+		// 初始化计时器
+		startTimer();
 	}
 
 	/**
@@ -144,9 +148,6 @@
 				.catch((error) => reject(error));
 		});
 	}
-
-	// 初始化计时器
-	startTimer();
 
 	// 定义刷新函数
 	function refreshPage() {
