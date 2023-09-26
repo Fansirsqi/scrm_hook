@@ -2,7 +2,7 @@
 // @name         ✨Hook.DNY-SCRM-通过Authorization登录✨
 // @namespace    fansir
 // @author       fansir
-// @version      0.7.1
+// @version      0.8
 // @description  使用🚀Authorization🚀登录DNY-SCRM
 // @author       Fansirliu
 // @match        https://dyaccountmgt.platform-loreal.cn/*
@@ -12,6 +12,8 @@
 // @grant        none
 // @license      MIT
 // ==/UserScript==
+//修改url检测逻辑,修复计时器刷新一次后不再计时的问题(以前是采用刷新页面故会重载js,所以难以复现)
+//移除鼠标点击监测事件@version      0.7.2
 //调整逻辑,在非登录页面,才进行监听等操作@version      0.7.1
 //去除不必要的注释-version      0.6.1
 //优化刷新页面的逻辑,检测到用户点击等操作时,重置续命计时器,优化hook提示-version      0.6
@@ -151,15 +153,29 @@
 
 	// 定义刷新函数
 	function refreshPage() {
-		location.reload();
+		// location.reload();
+		checkToken(localStorage.getItem("token"))
+			.then((result) => {
+				if (result.userName) {
+					log("续命成功!");
+					showPopup("续命成功!", 2000);
+				} else {
+					log("续命失败!");
+					showPopup("续命失败!,请手动刷新页面检查tk状态", 2000);
+				}
+			})
+			.catch((error) => console.error(error));
 		log("刷新页面,续命tk");
 	}
 
 	// 定义重置计时函数
 	function resetTimer() {
 		remainingTime = 10;
-		// startTimer();
-		log(`重置计时器: ${remainingTime} 分钟`);
+		log("计时器已重置");
+		if (isIdle) {
+			isIdle = false;
+			startTimer();
+		}
 	}
 
 	function startTimer() {
@@ -170,20 +186,28 @@
 				clearInterval(intervalId);
 				isIdle = true;
 				refreshPage();
+				resetTimer(); //续命成功后重置计时器
 			}
 		}, 60 * 1000);
 
 		// 定义事件类型数组
 		// const eventTypes = ["mousemove", "keydown", "mousedown", "touchstart", "scroll"];
-		const eventTypes = ["keydown", "mousedown", "touchstart"];
-		// 循环添加和移除事件监听器
+		const eventTypes = ["keydown", "touchstart"];
 		for (let eventType of eventTypes) {
-			document.removeEventListener(eventType, resetTimer);
-			document.addEventListener(eventType, resetTimer);
+			window.removeEventListener(eventType, resetTimer);
+			window.addEventListener(eventType, resetTimer);
 		}
-		// 添加 URL 变化事件监听器
-		window.removeEventListener("hashchange", resetTimer, false);
-		window.addEventListener("hashchange", resetTimer, false);
+
+		let currentUrl = window.location.href;
+		const urlCheckIntervalId = setInterval(function () {
+			if (window.location.href !== currentUrl) {
+				currentUrl = window.location.href;
+				log("监测到url变化!!");
+				resetTimer();
+			} else {
+				// log("未监测到url变化...");
+			}
+		}, 10 * 1000);
 	}
 
 	/**
