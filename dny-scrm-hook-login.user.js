@@ -2,7 +2,7 @@
 // @name         ✨Hook.DNY-SCRM-通过Authorization登录✨
 // @namespace    fansir
 // @author       fansir
-// @version      0.9.3 fixed
+// @version      0.9.4
 // @description  使用🚀Authorization🚀登录DNY-SCRM
 // @author       Fansirliu
 // @match        https://dyaccountmgt.platform-loreal.cn/*
@@ -14,7 +14,7 @@
 // @downloadURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.user.js
 // @updateURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.meta.js
 // ==/UserScript==
-//新增快捷复制Authorization按钮  @version      0.9.3 -- fixed
+//新增快捷复制Authorization按钮  @version      0.9.4
 //同步更新dev菜单，星图菜单  @version      0.9.2
 //调整注入主题为light模式,因为生产默认扫码登录是light模式  @version      0.9.1
 //修复菜单缺失DNY达人榜单问题,更新权限菜单同步DEV环境,可能会出现不可预知的问题 @version      0.9
@@ -53,16 +53,33 @@
   }
   /**
    * 获取localStorage内容
+   * @param {String} arg
    */
-  function getTokenContent() {
-    const token = localStorage.getItem("token");
+  function getTokenContent(arg) {
+    const token = localStorage.getItem(arg);
     if (token) {
       copyToClipboard(token);
-      showPopup(`已复制Token至剪切板`, 1500);
+      showPopup(`已复制${arg}至剪切板`, 1500);
     } else {
-      showPopup(`localStorage中未找到Token`, 2000);
+      showPopup(`localStorage中未找到${arg}`, 2000);
     }
   }
+
+  const button = document.createElement('button');
+    button.innerText = '✨Copy Token';
+    button.title = "复制环境Authorization";
+    button.style.cssText = "position: fixed;left:10px;bottom:10px;z-index:9999;border-radius: 12px;border:none; font-size: 20px; font-weight: 900; color: dodgerblue; cursor: pointer;line-height: 20px;padding: 10px;";
+    button.addEventListener('click', getTokenContent('token'));
+    button.addEventListener("mouseover", function () {
+      this.style.backgroundColor = "dodgerblue";
+      this.style.color = "#fff";
+    });
+
+    button.addEventListener("mouseout", function () {
+      this.style.backgroundColor = "";
+      this.style.color = "dodgerblue";
+    });
+    document.body.appendChild(button);
 
 
 
@@ -122,21 +139,7 @@
   } else {
     // 初始化计时器
     startTimer();
-    const button = document.createElement('button');
-    button.innerText = '✨Copy Token';
-    button.title = "复制环境Authorization";
-    button.style.cssText = "position: fixed;left:10px;bottom:10px;z-index:9999;border-radius: 12px;border:none; font-size: 20px; font-weight: 900; color: dodgerblue; cursor: pointer;line-height: 20px;padding: 10px;";
-    button.addEventListener('click', getTokenContent());
-    button.addEventListener("mouseover", function () {
-      this.style.backgroundColor = "dodgerblue";
-      this.style.color = "#fff";
-    });
-
-    button.addEventListener("mouseout", function () {
-      this.style.backgroundColor = "";
-      this.style.color = "dodgerblue";
-    });
-    document.body.appendChild(button);
+    
   }
 
   /**
