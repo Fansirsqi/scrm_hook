@@ -42,15 +42,14 @@
    * @param {*} text 
    */
   function copyToClipboard(text) {
-    const input = document.createElement('input');
-    input.style.position = 'fixed';
-    input.style.opacity = 0;
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-  }
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            console.log('Text copied to clipboard: ' + text);
+        })
+        .catch(err => {
+            console.error('Unable to copy text to clipboard: ', err);
+        });
+}
   /**
    * 获取localStorage内容
    * @param {String} arg
@@ -69,7 +68,10 @@
     button.innerText = '✨Copy Token';
     button.title = "复制环境Authorization";
     button.style.cssText = "position: fixed;left:10px;bottom:10px;z-index:9999;border-radius: 12px;border:none; font-size: 20px; font-weight: 900; color: dodgerblue; cursor: pointer;line-height: 20px;padding: 10px;";
-    button.addEventListener('click', getTokenContent('token'));
+    //闭包调用
+    button.addEventListener('click', function(){
+      getTokenContent('token')
+    });
     button.addEventListener("mouseover", function () {
       this.style.backgroundColor = "dodgerblue";
       this.style.color = "#fff";
