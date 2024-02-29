@@ -39,6 +39,9 @@
     "https://t-douyinscrm.tarsocial.com/s/login",
     "https://dyaccountmgt.platform-loreal.cn/s/login",
     "https://dyaccountmgt-uat.platform-loreal.cn/s/login",
+    "https://t-douyinscrm.tarsocial.com/login",
+    "https://dyaccountmgt.platform-loreal.cn/login",
+    "https://dyaccountmgt-uat.platform-loreal.cn/login",
   ];
   var map = {
     "t-douyinscrm.tarsocial.com": "https://t-apidouyinscrm.aisuperstar.com",
@@ -152,6 +155,7 @@
   }
 
   function checks() {
+    // log("check button")
     if (loginUrls.includes(window.location.href)) {
       setDisplay("fast-login", "")
       setDisplay("copy-button", "none")
@@ -326,11 +330,12 @@
   function resetTimer() {
     remainingTime = 10;
     // log("计时器已重置");
-    checks()
+    checks();
     if (isIdle) {
       isIdle = false;
       startTimer();
     }
+    setTimeout(resetTimer, 3000); // 延时1000毫秒（1秒）
   }
 
   function startTimer() {
@@ -348,7 +353,7 @@
 
     // 定义事件类型数组
     // const eventTypes = ["mousemove", "keydown", "mousedown", "touchstart", "scroll"];
-    const eventTypes = ["keydown", "touchstart", 'mousedown'];
+    const eventTypes = ["keydown", "touchstart",];
     for (let eventType of eventTypes) {
       window.removeEventListener(eventType, resetTimer);
       window.addEventListener(eventType, resetTimer);
@@ -364,7 +369,7 @@
       } else {
         // log("未监测到url变化...");
       }
-    }, 60 * 1000);//一分钟检测一次URl
+    }, 30 * 1000);//一30s 检测一次URl
   }
 
   /**
