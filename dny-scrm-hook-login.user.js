@@ -86,7 +86,7 @@
     "fast-login"
   );
   checkBtn(window.location.href)
-  
+
   startTimer(remainingTime);
 
 
@@ -351,13 +351,14 @@
   }
 
   function startTimer(remainingTime) {
-    log(`剩余时间：${remainingTime} 分钟`);
+    log(`开始执行-剩余时间：${remainingTime} (分钟)`);
     intervalId1 = setInterval(function () {
       if (remainingTime <= 0) {
         refreshPage();
         resetTimer(); //续命成功后重置计时器
       }
       remainingTime -= 1;
+      log(`剩余时间：${remainingTime} (分钟)`);
     }, 60 * 1000);
   }
 
