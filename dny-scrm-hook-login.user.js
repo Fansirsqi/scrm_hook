@@ -2,7 +2,7 @@
 // @name         ✨Hook.DNY-SCRM-通过Authorization登录✨
 // @namespace    fansir
 // @author       fansir
-// @version      0.9.4.1 
+// @version      0.9.5
 // @description  使用🚀Authorization🚀登录DNY-SCRM
 // @author       Fansirliu
 // @match        https://dyaccountmgt.platform-loreal.cn/*
@@ -14,6 +14,7 @@
 // @downloadURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.user.js
 // @updateURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.meta.js
 // ==/UserScript==
+// 优化检测逻辑，重振雄风 @version      0.9.4
 // 修复按钮展示逻辑
 //新增快捷复制Authorization按钮  @version      0.9.4
 //同步更新dev菜单，星图菜单  @version      0.9.2
@@ -29,10 +30,9 @@
 (function () {
   ("use strict");
   var host = window.location.host;
-
-  var isIdle = false;
   var remainingTime = 10; // 初始剩余时间为 10 分钟
   var log = console.log;
+  var intervalId1, intervalId2; // 将 intervalId1 声明在函数外部，以便其他函数可以访问
 
 
   var loginUrls = [
@@ -85,12 +85,29 @@
     },
     "fast-login"
   );
+  checkBtn(window.location.href)
+  
+  startTimer(remainingTime);
 
-  checks()
 
 
-
-  startTimer();
+  intervalId2 = setInterval(function () {
+    // 定义事件类型数组
+    // const eventTypes = ["mousemove", "keydown", "mousedown", "touchstart", "scroll"];
+    const eventTypes = ["touchstart"];
+    for (let eventType of eventTypes) {
+      window.removeEventListener(eventType, resetTimer);
+      window.addEventListener(eventType, resetTimer);
+    }
+    let currentUrl = window.location.href;
+    checkBtn(currentUrl);
+    setTimeout(function () {
+      if (currentUrl !== window.location.href) {
+        currentUrl = window.location.href;
+        resetTimer();
+      }
+    }, 5000)
+  }, 1000);//1s 检测一次URl
 
   /**
    * 复制内容至剪切板
@@ -154,9 +171,9 @@
     document.body.appendChild(button);
   }
 
-  function checks() {
-    // log("check button")
-    if (loginUrls.includes(window.location.href)) {
+  function checkBtn(currentUrl) {
+    // log("start check url...")
+    if (loginUrls.includes(currentUrl)) {
       setDisplay("fast-login", "")
       setDisplay("copy-button", "none")
     } else {
@@ -315,7 +332,7 @@
     checkToken(localStorage.getItem("token"))
       .then((result) => {
         if (result.userName) {
-          log("续命成功!");
+          log("刷新页面，执行续命!");
           showPopup("续命成功!", 2000);
         } else {
           log("续命失败!");
@@ -328,49 +345,23 @@
 
   // 定义重置计时函数
   function resetTimer() {
-    remainingTime = 10;
-    // log("计时器已重置");
-    checks();
-    if (isIdle) {
-      isIdle = false;
-      startTimer();
-    }
-    setTimeout(resetTimer, 3000); // 延时1000毫秒（1秒）
+    // log("you do reset")
+    clearInterval(intervalId1)
+    startTimer(10);
   }
 
-  function startTimer() {
-    log("初始化计时器")
-    const intervalId = setInterval(function () {
-      remainingTime--;
-      log(`剩余时间：${remainingTime} 分钟`);
+  function startTimer(remainingTime) {
+    log(`剩余时间：${remainingTime} 分钟`);
+    intervalId1 = setInterval(function () {
       if (remainingTime <= 0) {
-        clearInterval(intervalId);
-        isIdle = true;
         refreshPage();
         resetTimer(); //续命成功后重置计时器
       }
+      remainingTime -= 1;
     }, 60 * 1000);
-
-    // 定义事件类型数组
-    // const eventTypes = ["mousemove", "keydown", "mousedown", "touchstart", "scroll"];
-    const eventTypes = ["keydown", "touchstart",];
-    for (let eventType of eventTypes) {
-      window.removeEventListener(eventType, resetTimer);
-      window.addEventListener(eventType, resetTimer);
-    }
-
-    let currentUrl = window.location.href;
-    // log("设置按钮", currentUrl)
-
-    setInterval(function () {
-      if (window.location.href !== currentUrl) {
-        currentUrl = window.location.href;
-        resetTimer();
-      } else {
-        // log("未监测到url变化...");
-      }
-    }, 30 * 1000);//一30s 检测一次URl
   }
+
+
 
   /**
    * 提示hook状态
