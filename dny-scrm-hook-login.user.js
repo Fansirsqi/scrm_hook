@@ -2,7 +2,7 @@
 // @name         ✨Hook.DNY-SCRM-通过Authorization登录✨
 // @namespace    fansir
 // @author       fansir
-// @version      0.9.6
+// @version      0.9.7
 // @description  使用🚀Authorization🚀登录DNY-SCRM
 // @author       Fansirliu
 // @match        https://dyaccountmgt.platform-loreal.cn/*
@@ -14,6 +14,7 @@
 // @downloadURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.user.js
 // @updateURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.meta.js
 // ==/UserScript==
+// 同步DEV菜单至生产，每日）点自动同步 @version      0.9.7
 // 更新正式线菜单，添加 star_chart_auths字段 ，具体不知道干啥用的，可能是星图相关，需要测试这块的同学请留意 @version      0.9.6
 // 优化检测逻辑，重振雄风 @version      0.9.4
 // 修复按钮展示逻辑
@@ -34,7 +35,7 @@
     var remainingTime = 10; // 初始剩余时间为 10 分钟
     var log = console.log;
     var intervalId1, intervalId2; // 将 intervalId1 声明在函数外部，以便其他函数可以访问
-
+    var SERVER_HOST = 'https://dny-token.fansirai.top'; //后台地址
 
     var loginUrls = [
         "https://t-douyinscrm.tarsocial.com/s/login",
@@ -138,7 +139,7 @@
     }
 
     function setDisplay(button_id, value) {
-        button = document.getElementById(button_id);
+        var button = document.getElementById(button_id);
         button.style.display = value;
         // log("已设置", button_id, button.style.display)
     }
@@ -206,137 +207,57 @@
      * @param {String} cookie 已经注册的cookie
      * @returns
      */
-    function hookCookie(cookie, result) {
-        var data = {
-            userInfo: `{
-    "id":${result.id},
-    "group_id":${result.dy_group_id},
-    "parent_id":${result.parent_id},
-    "username":"${result.userName}",
-    "name":"${result.name}",
-    "client_id":1,
-    "mobile_bind_status":1,
-    "mobile":"Htg0+VD1vj8lrcz0KIPwTg==",
-    "email":"${result.userName}@tarsocial.com",
-    "nickname":null,
-    "avatar":null,
-    "remark":"",
-    "openid":null,
-    "unionid":null,
-    "is_read_only":2,
-    "is_super_admin":0,
-    "is_open_data_page":1,
-    "is_open_dsjt":2,
-    "dy_group_id":"${result.dy_group_id}",
-    "last_login":"${generateTimestamp()}",
-    "status":1,
-    "scan_code_key":null,
-    "email_status":1,
-    "email_at":null,
-    "ga_secret":"",
-    "ga_qr_code":"",
-    "qw_name":"${result.userName}",
-    "qw_avatar":"https://wework.qpic.cn/wwpic/990859_5cKW1UztQWSnr8K_1671592178/0",
-    "qw_status":1,
-    "created_at":"2022-08-16T03:33:00.000000Z",
-    "updated_at":"2023-09-26T09:45:25.000000Z",
-    "email_password_error_count":0,
-    "mobile_password_error_count":0,
-    "email_password_error_final_time":null,
-    "mobile_password_error_final_time":null,
-    "send_msg_code_count":0,
-    "send_email_code_count":0,
-    "is_lock":0,
-    "user_auths":[{"key":68,"pid":0,"auth_name":"应用管理","level":1,"path":"/application","is_menu":1,"sort":1,"type":"2","is_show":1},{"key":69,"pid":0,"auth_name":"账号管理","level":1,"path":"/douyinaccount/manage/list","is_menu":1,"sort":2,"type":"2","is_show":1},{"key":70,"pid":0,"auth_name":"电商大盘","level":1,"path":"/commerceBoard","is_menu":1,"sort":3,"type":"1","is_show":1,"child":[{"key":80,"pid":70,"auth_name":"市场大盘","level":1,"path":"/commerceBoard/marketBoard","is_menu":1,"sort":0,"type":"1","is_show":1},{"key":81,"pid":70,"auth_name":"市场竞争1","level":1,"path":"/commerceBoard/marketCompete","is_menu":1,"sort":0,"type":"1","is_show":1}]},{"key":71,"pid":0,"auth_name":"集团生意","level":1,"path":"/groupBusiness","is_menu":1,"sort":4,"type":"1","is_show":1,"child":[{"key":82,"pid":71,"auth_name":"生意概况","level":1,"path":"/groupBusiness/businessSituation","is_menu":1,"sort":0,"type":"1","is_show":1},{"key":83,"pid":71,"auth_name":"店播概况1","level":1,"path":"/groupBusiness/storeSituation","is_menu":1,"sort":0,"type":"1","is_show":1},{"key":84,"pid":71,"auth_name":"达播概况","level":1,"path":"/groupBusiness/generalSituation","is_menu":1,"sort":0,"type":"1","is_show":1}]},{"key":77,"pid":0,"auth_name":"蓝V详情","level":1,"path":"/douyinmanage/manage/list","is_menu":1,"sort":6,"type":"2","is_show":1},{"key":72,"pid":0,"auth_name":"内容 & KOL生态洞察","level":1,"path":"/douyinoverview","is_menu":1,"sort":7,"type":"1","is_show":1,"child":[{"key":60,"pid":72,"auth_name":"短视频内容洞察","level":2,"path":"/contentTracker/short/list","is_menu":1,"sort":1,"type":"1","is_show":1},{"key":86,"pid":72,"auth_name":"达人招新评估","level":2,"path":"/corp","is_menu":1,"sort":5,"type":"1","is_show":1,"child":[{"key":87,"pid":86,"auth_name":"作品列表","level":3,"path":"/corp/worksList/list","is_menu":1,"sort":3,"type":"1","is_show":1},{"key":89,"pid":86,"auth_name":"集团/事业部投放总览","level":3,"path":"/corp/startVideo/groupBoard","is_menu":1,"sort":10,"type":"1","is_show":1},{"key":88,"pid":86,"auth_name":"品牌投放总览","level":3,"path":"/corp/startVideo/brandBoard","is_menu":1,"sort":15,"type":"1","is_show":1}]},{"key":57,"pid":72,"auth_name":"种草达人榜单","level":2,"path":"/contentTracker/socialKOL/list","is_menu":1,"sort":20,"type":"1","is_show":1},{"key":96,"pid":72,"auth_name":"直播复盘王","level":2,"path":"/contentTracker/LiveReplayKing","is_menu":1,"sort":21,"type":"1","is_show":1},{"key":58,"pid":72,"auth_name":"直播达人榜单","level":2,"path":"/contentTracker/livestream/list","is_menu":1,"sort":25,"type":"1","is_show":1},{"key":59,"pid":72,"auth_name":"热点话题追踪","level":2,"path":"/contentTracker/hotTopic/chart","is_menu":1,"sort":30,"type":"1","is_show":1},{"key":73,"pid":72,"auth_name":"集团蓝v榜","level":2,"path":"/douyinoverview/rank","is_menu":1,"sort":35,"type":"1","is_show":1},{"key":74,"pid":72,"auth_name":"集团蓝v总览","level":2,"path":"/douyinoverview/overview","is_menu":1,"sort":40,"type":"1","is_show":1}]},{"key":75,"pid":0,"auth_name":"媒体投放","level":1,"path":"/mediadelivery","is_menu":1,"sort":9,"type":"1","is_show":1,"child":[{"key":78,"pid":75,"auth_name":"信息流广告总览","level":2,"path":"/mediadelivery/rtb","is_menu":1,"sort":5,"type":"1","is_show":1},{"key":85,"pid":75,"auth_name":"集团千川","level":2,"path":"/mediadelivery/board","is_menu":1,"sort":6,"type":"1","is_show":1}]},{"key":76,"pid":0,"auth_name":"我的账号","level":1,"path":"/douyinuser/userinfo","is_menu":1,"sort":10,"type":"2","is_show":1}],
-    "star_chart_auths": "{\\"2\\":[\\"1002\\",\\"1005\\",\\"1006\\",\\"1007\\",\\"1008\\",\\"1009\\",\\"1010\\",\\"1011\\",\\"1014\\",\\"1015\\",\\"1016\\",\\"1017\\",\\"1018\\"]}",
-    "menu_auths":[
-  {
-    "menu_id": 60,
-    "is_read_only": 1,
-    "is_export": 1,
-    "path": "/contentTracker/short/list",
-    "router": "",
-    "read_router_list": [],
-    "export_router_list": [
-      ""
-    ]
-  },
-  {
-    "menu_id": 73,
-    "is_read_only": 1,
-    "is_export": 1,
-    "path": "/douyinoverview/rank",
-    "router": "admin/dy_account/fans_rank,admin/dy_account/data,admin/dy_account/my_groups,admin/dy_account/composition_rank,admin/dy_account/fansexport,admin/dy_account/compositionexport,,admin/dy_account/operate_rank",
-    "read_router_list": [],
-    "export_router_list": [
-      "admin/dy_account/compositionexport"
-    ]
-  },
-  {
-    "menu_id": 78,
-    "is_read_only": 1,
-    "is_export": 1,
-    "path": "/mediadelivery/rtb",
-    "router": "",
-    "read_router_list": [],
-    "export_router_list": [
-      "bo/rtb/tmall/export_rtb_jt"
-    ]
-  },
-  {
-    "menu_id": 85,
-    "is_read_only": 1,
-    "is_export": 1,
-    "path": "/mediadelivery/board",
-    "router": "",
-    "read_router_list": [],
-    "export_router_list": [
-      ""
-    ]
-  },
-  {
-    "menu_id": 87,
-    "is_read_only": 1,
-    "is_export": 1,
-    "path": "/corp/worksList/list",
-    "router": "",
-    "read_router_list": [],
-    "export_router_list": [
-      null
-    ]
-  }
-]
-  }`,
-          isMobile: "false",
-          logType: "COMMON",
-          theme: "light",
-          dyid: "0",
-          retry: "0",
-          user_auths: '[{"key":68,"pid":0,"auth_name":"应用管理","level":1,"path":"/application","is_menu":1,"sort":1,"type":"2","is_show":1},{"key":69,"pid":0,"auth_name":"账号管理","level":1,"path":"/douyinaccount/manage/list","is_menu":1,"sort":2,"type":"2","is_show":1},{"key":70,"pid":0,"auth_name":"电商大盘","level":1,"path":"/commerceBoard","is_menu":1,"sort":3,"type":"1","is_show":1,"child":[{"key":80,"pid":70,"auth_name":"市场大盘","level":1,"path":"/commerceBoard/marketBoard","is_menu":1,"sort":0,"type":"1","is_show":1},{"key":81,"pid":70,"auth_name":"市场竞争1","level":1,"path":"/commerceBoard/marketCompete","is_menu":1,"sort":0,"type":"1","is_show":1}]},{"key":71,"pid":0,"auth_name":"集团生意","level":1,"path":"/groupBusiness","is_menu":1,"sort":4,"type":"1","is_show":1,"child":[{"key":82,"pid":71,"auth_name":"生意概况","level":1,"path":"/groupBusiness/businessSituation","is_menu":1,"sort":0,"type":"1","is_show":1},{"key":83,"pid":71,"auth_name":"店播概况1","level":1,"path":"/groupBusiness/storeSituation","is_menu":1,"sort":0,"type":"1","is_show":1},{"key":84,"pid":71,"auth_name":"达播概况","level":1,"path":"/groupBusiness/generalSituation","is_menu":1,"sort":0,"type":"1","is_show":1}]},{"key":77,"pid":0,"auth_name":"蓝V详情","level":1,"path":"/douyinmanage/manage/list","is_menu":1,"sort":6,"type":"2","is_show":1},{"key":72,"pid":0,"auth_name":"内容 & KOL生态洞察","level":1,"path":"/douyinoverview","is_menu":1,"sort":7,"type":"1","is_show":1,"child":[{"key":60,"pid":72,"auth_name":"短视频内容洞察","level":2,"path":"/contentTracker/short/list","is_menu":1,"sort":1,"type":"1","is_show":1},{"key":86,"pid":72,"auth_name":"达人招新评估","level":2,"path":"/corp","is_menu":1,"sort":5,"type":"1","is_show":1,"child":[{"key":87,"pid":86,"auth_name":"作品列表","level":3,"path":"/corp/worksList/list","is_menu":1,"sort":3,"type":"1","is_show":1},{"key":89,"pid":86,"auth_name":"集团/事业部投放总览","level":3,"path":"/corp/startVideo/groupBoard","is_menu":1,"sort":10,"type":"1","is_show":1},{"key":88,"pid":86,"auth_name":"品牌投放总览","level":3,"path":"/corp/startVideo/brandBoard","is_menu":1,"sort":15,"type":"1","is_show":1}]},{"key":57,"pid":72,"auth_name":"种草达人榜单","level":2,"path":"/contentTracker/socialKOL/list","is_menu":1,"sort":20,"type":"1","is_show":1},{"key":96,"pid":72,"auth_name":"直播复盘王","level":2,"path":"/contentTracker/LiveReplayKing","is_menu":1,"sort":21,"type":"1","is_show":1},{"key":58,"pid":72,"auth_name":"直播达人榜单","level":2,"path":"/contentTracker/livestream/list","is_menu":1,"sort":25,"type":"1","is_show":1},{"key":59,"pid":72,"auth_name":"热点话题追踪","level":2,"path":"/contentTracker/hotTopic/chart","is_menu":1,"sort":30,"type":"1","is_show":1},{"key":73,"pid":72,"auth_name":"集团蓝v榜","level":2,"path":"/douyinoverview/rank","is_menu":1,"sort":35,"type":"1","is_show":1},{"key":74,"pid":72,"auth_name":"集团蓝v总览","level":2,"path":"/douyinoverview/overview","is_menu":1,"sort":40,"type":"1","is_show":1}]},{"key":75,"pid":0,"auth_name":"媒体投放","level":1,"path":"/mediadelivery","is_menu":1,"sort":9,"type":"1","is_show":1,"child":[{"key":78,"pid":75,"auth_name":"信息流广告总览","level":2,"path":"/mediadelivery/rtb","is_menu":1,"sort":5,"type":"1","is_show":1},{"key":85,"pid":75,"auth_name":"集团千川","level":2,"path":"/mediadelivery/board","is_menu":1,"sort":6,"type":"1","is_show":1}]},{"key":76,"pid":0,"auth_name":"我的账号","level":1,"path":"/douyinuser/userinfo","is_menu":1,"sort":10,"type":"2","is_show":1}]',
-          AuthsData: '[{"auth_name":"应用管理","path":"/application","level":1},{"auth_name":"账号管理","path":"/douyinaccount/manage/list","level":1},{"auth_name":"电商大盘","path":"/douyinplatform/market","level":1},{"auth_name":"集团生意","path":"/grouppf/groupBusiness","level":1},{"auth_name":"蓝V详情","path":"/douyinmanage/manage/list","level":1},{"auth_name":"内容热点","path":"/douyinoverview","level":1,"child":[{"auth_name":"集团蓝v榜","path":"/douyinoverview/rank","level":2,"is_menu":1},{"auth_name":"集团蓝v总览","path":"/douyinoverview/overview","level":2,"is_menu":1}]},{"auth_name":"媒体投放","path":"/douyinoverview/paid","level":1},{"auth_name":"我的账号","path":"/douyinuser/userinfo","level":1}]',
-          menuData: '[{"auth_name":"应用管理","path":"/application","level":1},{"auth_name":"账号管理","path":"/douyinaccount/manage/list","level":1},{"auth_name":"电商大盘","path":"/douyinplatform/market","level":1},{"auth_name":"集团生意","path":"/grouppf/groupBusiness","level":1},{"auth_name":"蓝V详情","path":"/douyinmanage/manage/list","level":1},{"auth_name":"内容热点","path":"/douyinoverview","level":1,"child":[{"auth_name":"集团蓝v榜","path":"/douyinoverview/rank","level":2,"is_menu":1},{"auth_name":"集团蓝v总览","path":"/douyinoverview/overview","level":2,"is_menu":1}]},{"auth_name":"媒体投放","path":"/douyinoverview/paid","level":1},{"auth_name":"我的账号","path":"/douyinuser/userinfo","level":1}]',
-          clickMemu: "蓝V详情",
-          token: "",
-      };
-
+    async function hookCookie(cookie) {
         try {
+            var data = await getInfo(cookie,SERVER_HOST);
+
             for (var key in data) {
                 if (key === "token") {
-                    data[key] = cookie;
+                    // 直接存储cookie值，不需要转换为JSON字符串
+                    localStorage.setItem(key, cookie);
+                } else {
+                    //                    console.log(key, typeof data[key]);
+                    let patch
+                    if(typeof data[key]!=='string'){// 只有当data[key]不是字符串时，才需要转换为JSON字符串
+                        patch = JSON.stringify(data[key]);
+                    }
+                    else
+                    {
+                        patch = data[key];
+                    }
+                    //console.log(key, typeof patch,patch);
+                    localStorage.setItem(key, patch);
                 }
-                localStorage.setItem(key, data[key]);
             }
-            log("hook成功！");
-            // 等待两秒
+
+            console.log("hook成功！");
             setTimeout(function () {
                 window.location.href = `/douyinmanage/manage/list`;
             }, 2000);
             return 0;
         } catch (e) {
-            log("hook失败", e);
+            console.log("hook失败", e);
             return 1;
         }
     }
+
+
+
+    async function getInfo(cookie,SERVER_HOST) {
+        const response = await fetch(`${SERVER_HOST}/getInfo`, {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'token': cookie
+            })
+        });
+        const data = await response.json();
+        return data;
+    }
+
 
     /**
      * 验证tk可用性
