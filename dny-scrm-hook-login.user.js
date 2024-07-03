@@ -2,7 +2,7 @@
 // @name         ✨Hook.DNY-SCRM-通过Authorization登录✨
 // @namespace    fansir
 // @author       fansir
-// @version      0.9.7
+// @version      0.9.8
 // @description  使用🚀Authorization🚀登录DNY-SCRM
 // @author       Fansirliu
 // @match        https://dyaccountmgt.platform-loreal.cn/*
@@ -14,6 +14,7 @@
 // @downloadURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.user.js
 // @updateURL https://update.greasyfork.org/scripts/475857/%E2%9C%A8HookDNY-SCRM-%E9%80%9A%E8%BF%87Authorization%E7%99%BB%E5%BD%95%E2%9C%A8.meta.js
 // ==/UserScript==
+// fix 服务域名更换  07-03 更换域名后的地址需要更新 @version      0.9.8
 // 同步DEV菜单至生产，每日）点自动同步 @version      0.9.7
 // 更新正式线菜单，添加 star_chart_auths字段 ，具体不知道干啥用的，可能是星图相关，需要测试这块的同学请留意 @version      0.9.6
 // 优化检测逻辑，重振雄风 @version      0.9.4
@@ -35,7 +36,8 @@
     var remainingTime = 10; // 初始剩余时间为 10 分钟
     var log = console.log;
     var intervalId1, intervalId2; // 将 intervalId1 声明在函数外部，以便其他函数可以访问
-    var SERVER_HOST = 'https://dny-token.fansirai.top'; //后台地址
+    var SERVER_HOST = 'https://dny-token.fanservice.fun' //07-03 更换域名后的地址需要更新
+    // var SERVER_HOST = 'https://dny-token.fansirai.top'; //已过期域名，不再使用
 
     var loginUrls = [
         "https://t-douyinscrm.tarsocial.com/s/login",
